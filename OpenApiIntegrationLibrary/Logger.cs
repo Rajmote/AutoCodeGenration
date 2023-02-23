@@ -26,5 +26,22 @@ namespace OpenApiIntegrationLibrary
                 }
             }
         }
+
+        public static void LogExceptions(string ReasonPhrase, string StatusCode, bool IsSuccessStatusCode)
+        {
+            using (StreamWriter writer = new StreamWriter(Utility.ERROR_FILE_PATH, true))
+            {
+                writer.WriteLine("-----------------------------------------------------------------------------");
+                writer.WriteLine("Date : " + DateTime.Now.ToString());
+                writer.WriteLine("Error has occured....");
+
+
+                writer.WriteLine("ReasonPhrase : " + ReasonPhrase);
+                writer.WriteLine("StatusCode : " + StatusCode);
+                writer.WriteLine("IsSuccessStatusCode : " + IsSuccessStatusCode);
+
+
+            }
+        }
     }
 }

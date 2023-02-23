@@ -101,7 +101,7 @@ namespace OpenApiIntegrationLibrary
                             }
                             else
                             {
-
+                                Logger.LogExceptions(httpResponse.ReasonPhrase.ToString(), httpResponse.StatusCode.ToString(), httpResponse.IsSuccessStatusCode);
                             }
                         }
                     }
