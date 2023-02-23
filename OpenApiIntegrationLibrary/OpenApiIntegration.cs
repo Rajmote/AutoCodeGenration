@@ -97,7 +97,16 @@ namespace OpenApiIntegrationLibrary
                             }
                             if (completionResponse is not null)
                             {
-                                completionText = completionResponse.Choices?[0]?.Text;
+                                string responseText = completionResponse.Choices?[0]?.Text;
+                                int index = responseText.IndexOf("</code>");
+                                if (index >= 0)
+                                {
+                                    completionText = responseText.Substring(0, index);
+                                }
+                                else
+                                {
+                                    completionText = responseText;
+                                }
                             }
                             else
                             {
