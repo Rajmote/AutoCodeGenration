@@ -4,43 +4,90 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Configuration;
+using System.Dynamic;
 
 namespace OpenApiIntegrationLibrary
 {
     public static class Utility
     {
+        #region "Variables"
+
         // Common Utility variables
-        public const string BASE_URL = "https://beta.openai.com/";
-        public const string OPENAI_API_KEY = "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";
-        public const string ALLOWED_FILE_EXTENTIONS = ".cs";
+        public static readonly string? BASE_URL = ConfigurationManager.AppSettings["BASE_URL"];
+        public static readonly string? OPENAI_API_KEY = ConfigurationManager.AppSettings["OPENAI_API_KEY"];
+        public static readonly string? ALLOWED_FILE_EXTENTIONS = ConfigurationManager.AppSettings["ALLOWED_FILE_EXTENTIONS"];
+        public static readonly string? OPERATIONS = ConfigurationManager.AppSettings["OPERATIONS"];
+        public static readonly string? CREATE_URL = ConfigurationManager.AppSettings["CREATE_URL"];
+        public static readonly string? ERROR_FILE_PATH = ConfigurationManager.AppSettings["ERROR_FILE_PATH"];
+        public static readonly string? MODEL_JSON_PATH = ConfigurationManager.AppSettings["MODEL_JSON_PATH"];
 
         // Edit code for Error and Comments
-        public const string EDIT_QUERY= "Edit code for Errors insert try catch block as well as code comments";
-        public const string CODE_FILES_PATH = @"C:\\Users\rajendra.m\Desktop\Private\Study\GitRepo\chat\codefiles\";
-        public const string EDIT_URL = "https://api.openai.com/v1/edits";
-        public const string EDIT_MODEL = "code-davinci-edit-001";
-        public const int EDIT_TEMPRATURE = 0;
-        public const int EDIT_TOP_P = 0;
-        public const int EDIT_N = 1;
-
+        //public static readonly string? EDIT_QUERY= GetSettings.AppSettings["EDIT_QUERY"]; 
+        //public static readonly string? CODE_FILES_PATH = GetSettings.AppSettings["CODE_FILES_PATH"];  
+        //public static readonly string? EDIT_URL = ConfigurationManager.AppSettings["EDIT_URL"];
+        //public static readonly string? EDIT_MODEL = ConfigurationManager.AppSettings["EDIT_MODEL"]; 
+        //public static readonly int? EDIT_TEMPRATURE = Convert.ToInt32(ConfigurationManager.AppSettings["EDIT_TEMPRATURE"]); 
+        //public static readonly int? EDIT_TOP_P = Convert.ToInt32(ConfigurationManager.AppSettings["EDIT_TOP_P"]);
+        //public static readonly int? EDIT_N = Convert.ToInt32(ConfigurationManager.AppSettings["EDIT_N"]); 
 
         // Create Code for Unit Test 
         //public const string CREATE_QUERY = "Create complete Unit Test Class"; 
-        public const string TEST_FILES_PATH = @"C:\Users\rajendra.m\Desktop\Private\Study\GitRepo\chat\testfiles\";
-        public const string CREATE_URL = "https://api.openai.com/v1/completions";
-        public const string CREATE_PROMPT = "# Create Unit Test Class";
-        public const string CREATE_MODEL = "text-davinci-003";//"code-cushman-001"; //"code-davinci-002"; //"code-davinci-edit-001";
-        public const int CREATE_MAX_TOKEN = 3000;
-        public const int CREATE_TEMPRATURE = 0;
-        public const int CREATE_TOP_P = 0;
-        public const int CREATE_N = 1;
-        public const bool CREATE_STREAM = false;
-        public const string? CREATE_LOGPROBS = null;
-        public const string CREATE_STOP = "\n";
+        //public static readonly string? TEST_FILES_PATH = GetSettings.AppSettings["TEST_FILES_PATH"];
+        //public static readonly string? CREATE_PROMPT = GetSettings.AppSettings["CREATE_PROMPT"];
 
-        
+
+        //public static readonly string? CREATE_MODEL = ConfigurationManager.AppSettings["CREATE_MODEL"];
+        //public static readonly int? CREATE_MAX_TOKEN = Convert.ToInt32(ConfigurationManager.AppSettings["CREATE_MAX_TOKEN"]);
+        //public static readonly double? CREATE_TEMPRATURE = Convert.ToDouble(ConfigurationManager.AppSettings["CREATE_TEMPRATURE"]);
+        //public static readonly int? CREATE_TOP_P = Convert.ToInt32(ConfigurationManager.AppSettings["CREATE_TOP_P"]);
+        //public static readonly int? CREATE_N = Convert.ToInt32(ConfigurationManager.AppSettings["CREATE_N"]);
+        //public static readonly bool? CREATE_STREAM = Convert.ToBoolean(ConfigurationManager.AppSettings["CREATE_STREAM"]);
+        //public static readonly string? CREATE_LOGPROBS = ConfigurationManager.AppSettings["CREATE_LOGPROBS"];
+        //public static readonly string? CREATE_STOP = ConfigurationManager.AppSettings["CREATE_STOP"];
+
         // Error messages
-        public const string ERROR_WHILE_OPERATING_FILE = " file has issue, please check code manually.";
-        public const string SUCCESS_MESSAGE = " has processed sucessfully.";
+        //public static readonly string? ERROR_WHILE_OPERATING_FILE = GetSettings.AppSettings["ERROR_WHILE_OPERATING_FILE"];
+        //public static readonly string? SUCCESS_MESSAGE = GetSettings.AppSettings["SUCCESS_MESSAGE"];
+
+        #endregion
+
+        public static List<string> GetAllowedFileExtentions()
+        {
+            var arrayOfExtention = Utility.ALLOWED_FILE_EXTENTIONS.Split(";");
+            return arrayOfExtention.ToList();
+        }
+
+        public static List<string> GetOperations()
+        {
+            var arrayOfOperations = Utility.OPERATIONS.Split(";");
+            return arrayOfOperations.ToList();
+        }
+
+        public static bool DoesPropertyExist(dynamic item, string? propertyName)
+        {
+            
+            if (item.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+            {               
+                foreach (var property in item)
+                {
+                    if (property.Name.ToString().ToLower() == propertyName.ToLower())
+                    {
+                        return true;
+                    }                    
+                }
+            }
+               
+
+            return false;
+        }
+
     }
+
+    public class FileInformation
+    {
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
+    }
+
 }

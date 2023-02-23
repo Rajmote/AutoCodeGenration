@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApiIntegrationLibrary", "OpenApiIntegrationLibrary\OpenApiIntegrationLibrary.csproj", "{96924542-D01C-488F-A251-C52700A927C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApiIntegrationLibrary", "OpenApiIntegrationLibrary\OpenApiIntegrationLibrary.csproj", "{96924542-D01C-488F-A251-C52700A927C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoCodeGenrationTest", "AutoCodeGenrationTest\AutoCodeGenrationTest.csproj", "{527E76B0-D8FE-4435-BBA5-2E38C494B0B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoCodeGenrationTest", "AutoCodeGenrationTest\AutoCodeGenrationTest.csproj", "{527E76B0-D8FE-4435-BBA5-2E38C494B0B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoCodeGenerationUI", "AutoCodeGenerationUI\AutoCodeGenerationUI.csproj", "{981A873A-82E3-424F-8C66-4436A5BCAD7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{527E76B0-D8FE-4435-BBA5-2E38C494B0B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{527E76B0-D8FE-4435-BBA5-2E38C494B0B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{527E76B0-D8FE-4435-BBA5-2E38C494B0B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{981A873A-82E3-424F-8C66-4436A5BCAD7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{981A873A-82E3-424F-8C66-4436A5BCAD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{981A873A-82E3-424F-8C66-4436A5BCAD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{981A873A-82E3-424F-8C66-4436A5BCAD7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

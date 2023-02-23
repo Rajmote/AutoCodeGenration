@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,86 +12,68 @@ namespace OpenApiIntegrationLibrary
 {
     public class OpenApiIntegration
     {
-        public async Task<bool> EditCodeFilesForCommentAndErrorCheck()
-        {
-            var codeFileList = Directory.GetFiles(Utility.CODE_FILES_PATH ?? string.Empty, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(Utility.ALLOWED_FILE_EXTENTIONS));
 
+
+        public async Task<bool> PerformOperation(List<FileInformation> codeFileList, string query, string destinationPath)
+        {
             foreach (var file in codeFileList)
             {
                 try
                 {
-                    string codeText = System.IO.File.ReadAllText(file);
+                    dynamic request = null;
+                    string? OperationUrl = string.Empty;
+                    string codeText = System.IO.File.ReadAllText(file.FilePath);
 
-                    EditRequest editRequest = new EditRequest
+                    string Query = query + codeText;
+                
+                    request = JsonConvert.DeserializeObject<object>(File.ReadAllText(Utility.MODEL_JSON_PATH));
+
+                    bool isContainPrompt = Utility.DoesPropertyExist(request, "prompt");
+
+                    bool isContainInput = Utility.DoesPropertyExist(request, "input");
+
+                    bool isContainInstruction = Utility.DoesPropertyExist(request, "instruction");
+                  
+                    if(isContainPrompt)
                     {
-                        Model = Utility.EDIT_MODEL,
-                        Input = codeText,
-                        Instruction = Utility.EDIT_QUERY,
-                        Temperature = Utility.EDIT_TEMPRATURE,
-                        Top_p = Utility.EDIT_TOP_P,
-                        N = Utility.EDIT_N,
-                    };
-
-                    var resultText = await CallOpenAIAPI(file, Utility.EDIT_URL, editRequest);
-
-                    if (!String.IsNullOrEmpty(resultText))
-                    {
-                        System.IO.File.WriteAllText(file, resultText);
+                        request.prompt = Query;
                     }
 
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(file + Utility.ERROR_WHILE_OPERATING_FILE + ex.Message);
-                    continue;
-                }
-            }
-
-            return true;
-        }
-
-        public async Task<bool> CreateUnitTestFiles()
-        {
-            var codeFileList = Directory.GetFiles(Utility.CODE_FILES_PATH ?? string.Empty, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(Utility.ALLOWED_FILE_EXTENTIONS));
-
-            foreach (var file in codeFileList)
-            {
-                try
-                {
-                    string codeText = System.IO.File.ReadAllText(file);
-                    string Query = Utility.CREATE_PROMPT + codeText;
-                    CompletionRequest completeRequest = new CompletionRequest 
+                    if(isContainInput)
                     {
-                        Model = Utility.CREATE_MODEL,
-                        Prompt = Query,
-                        MaxTokens = Utility.CREATE_MAX_TOKEN,
-                        //Temperature = Utility.CREATE_TEMPRATURE,
-                        //N = Utility.CREATE_N,
-                        //Stop = Utility.CREATE_STOP
-                    };
+                        request.input = codeText;
+                    }
 
-                    var resultText = await CallOpenAIAPI(file, Utility.CREATE_URL, completeRequest);
+                    if (isContainInstruction)
+                    {
+                        request.instruction = query;
+                    }
+
+                    OperationUrl = Utility.CREATE_URL;
+
+                    var resultText = await CallOpenAIAPI(file.FilePath, OperationUrl, request);
 
                     if (!String.IsNullOrEmpty(resultText))
                     {
-                        string fileName = Path.GetFileName(file);
-                        var testFile = Path.Combine(Utility.TEST_FILES_PATH, fileName);
-                        System.IO.File.WriteAllText(testFile, resultText);
+                        string fileName = Path.GetFileName(file.FilePath);
+                        var resultFile = Path.Combine(destinationPath, fileName);
+                        System.IO.File.WriteAllText(resultFile, resultText);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(file + Utility.ERROR_WHILE_OPERATING_FILE + ex.Message);
+                    Logger.LogExceptions(ex);
                     continue;
                 }
             }
             return true;
         }
 
-        public async Task<string> CallOpenAIAPI(string OperationalFile, string OperationUrl, object Request)
+        
+        public async Task<string?> CallOpenAIAPI(string OperationalFile, string OperationUrl, object Request)
         {
             string? completionText = string.Empty;
-            CompletionResponse completionResponse = null;
+            CompletionResponse? completionResponse = null;
             try
             {
                 using (HttpClient httpClient = new HttpClient())
@@ -96,7 +81,7 @@ namespace OpenApiIntegrationLibrary
                     using (var httpReq = new HttpRequestMessage(HttpMethod.Post, OperationUrl))
                     {
                         httpReq.Headers.Add("Authorization", $"Bearer {Utility.OPENAI_API_KEY}");
-                        string requestString = JsonSerializer.Serialize(Request);
+                        string requestString = System.Text.Json.JsonSerializer.Serialize(Request);
                         httpReq.Content = new StringContent(requestString, Encoding.UTF8, "application/json");
                         using (HttpResponseMessage? httpResponse = await httpClient.SendAsync(httpReq))
                         {
@@ -106,21 +91,18 @@ namespace OpenApiIntegrationLibrary
                                 {
                                     if (!string.IsNullOrWhiteSpace(responseString))
                                     {
-                                        completionResponse = JsonSerializer.Deserialize<CompletionResponse>(responseString);
+                                        completionResponse = System.Text.Json.JsonSerializer.Deserialize<CompletionResponse>(responseString);
                                     }
                                 }
                             }
                             if (completionResponse is not null)
                             {
                                 completionText = completionResponse.Choices?[0]?.Text;
-                                Console.WriteLine(completionText);
                             }
                             else
                             {
-                                Console.WriteLine(OperationalFile + Utility.ERROR_WHILE_OPERATING_FILE);
+
                             }
-                            Console.WriteLine("File => "+ OperationalFile);
-                            Console.WriteLine("Status Code => " + httpResponse.StatusCode.ToString());
                         }
                     }
                 }
@@ -128,7 +110,7 @@ namespace OpenApiIntegrationLibrary
             }
             catch (Exception ex)
             {
-                Console.WriteLine(OperationalFile + Utility.ERROR_WHILE_OPERATING_FILE + ex.Message);
+                Logger.LogExceptions(ex);
                 throw;
             }
         }
