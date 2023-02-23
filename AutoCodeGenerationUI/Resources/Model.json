@@ -1,5 +1,15 @@
 {
   "model": "text-davinci-003",
   "prompt": " ",
-  "max_tokens": 3000,
+  "max_tokens": 3000
 }
+
+// working one
+{
+  "model": "text-davinci-003",
+  "prompt": "p",
+  "max_tokens": 3000
+}
+<add key="OPERATIONS" value="--- Select Operation ---
+			 ;# Can you write c# unit test cases for given code  
+			 ;Create Unit test class for given code" />
