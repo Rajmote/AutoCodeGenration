@@ -24,9 +24,9 @@ namespace OpenApiIntegrationLibrary
                     string? OperationUrl = string.Empty;
                     string codeText = System.IO.File.ReadAllText(file.FilePath);
 
-                    string Query = query + codeText;
+                    string Query = query +" @ " + codeText;
                 
-                    request = JsonConvert.DeserializeObject<object>(File.ReadAllText(Utility.MODEL_JSON_PATH));
+                    request = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(Utility.MODEL_JSON_PATH)); 
 
                     bool isContainPrompt = Utility.DoesPropertyExist(request, "prompt");
 
@@ -81,7 +81,7 @@ namespace OpenApiIntegrationLibrary
                     using (var httpReq = new HttpRequestMessage(HttpMethod.Post, OperationUrl))
                     {
                         httpReq.Headers.Add("Authorization", $"Bearer {Utility.OPENAI_API_KEY}");
-                        string requestString = System.Text.Json.JsonSerializer.Serialize(Request);
+                        string requestString = JsonConvert.SerializeObject(Request);
                         httpReq.Content = new StringContent(requestString, Encoding.UTF8, "application/json");
                         using (HttpResponseMessage? httpResponse = await httpClient.SendAsync(httpReq))
                         {
@@ -91,13 +91,22 @@ namespace OpenApiIntegrationLibrary
                                 {
                                     if (!string.IsNullOrWhiteSpace(responseString))
                                     {
-                                        completionResponse = System.Text.Json.JsonSerializer.Deserialize<CompletionResponse>(responseString);
+                                        completionResponse = JsonConvert.DeserializeObject<CompletionResponse>(responseString);
                                     }
                                 }
                             }
                             if (completionResponse is not null)
                             {
-                                completionText = completionResponse.Choices?[0]?.Text;
+                                string responseText = completionResponse.Choices?[0]?.Text;
+                                int index = responseText.IndexOf("</code>");
+                                if (index >= 0)
+                                {
+                                    completionText = responseText.Substring(0, index);
+                                }
+                                else
+                                {
+                                    completionText = responseText;
+                                }
                             }
                             else
                             {
