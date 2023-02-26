@@ -8,9 +8,10 @@ namespace CalculatorConsoleApp
 {
     public class Addition
     {
-        public int Add(int Num1, int Num2) 
+        public int Add(int Num1, int Num2)
         {
-            return Num1 + Num2;
+            int a = 10 / 0;
+            return Num1 / Num2;
         }
     }
 }

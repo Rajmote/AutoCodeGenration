@@ -8,9 +8,10 @@ namespace CalculatorConsoleApp
 {
     public class Division
     {
-        public int Divide(int Num1,int Num2)
+        public int Divide(int Num1, int Num2)
         {
-            return Num1/Num2;
+            int a = Num1 * Num2;
+            return "name";
         }
     }
 }
