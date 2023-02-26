@@ -3,13 +3,3 @@
   "prompt": "p",
   "max_tokens": 3000
 }
-
-// working one
-//{
-//  "model": "text-davinci-003",
-//  "prompt": "p",
-//  "max_tokens": 3000
-//}
-//<add key="OPERATIONS" value="--- Select Operation ---
-//			 ;# Can you write c# unit test using MSTest framework cases for given code   
-//			 ;# Can you do error check and edit error prone code in given C# code" />
